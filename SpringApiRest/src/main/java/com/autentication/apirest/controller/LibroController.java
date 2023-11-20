@@ -1,5 +1,7 @@
 package com.autentication.apirest.controller;
 
+import com.autentication.apirest.DTO.LibroDTO;
+import com.autentication.apirest.DTO.LibroMapper;
 import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
 import com.autentication.apirest.services.IAuthorService;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -28,19 +31,22 @@ public class LibroController {
 //    El metodo retorna ResponseEntity porque nos da mayor control sobre los Status http que nos da el request
 //    Sirve para hacer las pruebas en PostmMan
     @GetMapping
-    public ResponseEntity<List<Libro>> getLibros() {
+    public ResponseEntity<List<LibroDTO>> getLibros() {
         List<Libro> libros = this.libroService.listLibros();
-        return new ResponseEntity<>(libros, HttpStatus.OK);
+        List<LibroDTO> libroDTOs = libros.stream()
+                .map(LibroMapper::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(libroDTOs, HttpStatus.OK);
     }
 
 
     // GET /libros/id
     @GetMapping("/{id}")
-    public ResponseEntity<Libro> getLibroById(@PathVariable Long id) {
+    public ResponseEntity<LibroDTO> getLibroById(@PathVariable Long id) {
         Optional<Libro> libro = this.libroService.searchLibro(id);
 
         if (libro.isPresent()){
-            return new ResponseEntity<>(libro.get(), HttpStatus.OK);
+            return new ResponseEntity<>(LibroMapper.toDTO(libro.get()), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -49,7 +55,7 @@ public class LibroController {
 
     // POST /libros
     @PostMapping
-    public ResponseEntity<Libro> createLibro(@RequestBody Libro libro) {
+    public ResponseEntity<LibroDTO> createLibro(@RequestBody Libro libro) {
         Long authorId = libro.getAutorId();
 
         Author author = authorService.searchAuthor(authorId).orElse(null);
@@ -61,7 +67,7 @@ public class LibroController {
             Libro newLibro = this.libroService.createLibro(libro);
 
             if (newLibro != null){
-                return new ResponseEntity<>(newLibro, HttpStatus.OK);
+                return new ResponseEntity<>(LibroMapper.toDTO(newLibro), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
@@ -71,7 +77,7 @@ public class LibroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Libro> updateLibro(@PathVariable Long id, @RequestBody Libro libro) {
+    public ResponseEntity<LibroDTO> updateLibro(@PathVariable Long id, @RequestBody Libro libro) {
         Libro previous = libroService.searchLibro(id).orElse(null);
 
         if (previous != null) {
@@ -80,7 +86,7 @@ public class LibroController {
                 Libro updateLibro = libroService.editLibro(id, libro);
 
                 if (updateLibro != null){
-                    return new ResponseEntity<>(updateLibro, HttpStatus.OK);
+                    return new ResponseEntity<>(LibroMapper.toDTO(updateLibro), HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
                 }

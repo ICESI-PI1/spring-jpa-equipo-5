@@ -1,4 +1,8 @@
 package com.autentication.apirest.controller;
+import com.autentication.apirest.DTO.AuthorDTO;
+import com.autentication.apirest.DTO.AuthorMapper;
+import com.autentication.apirest.DTO.LibroDTO;
+import com.autentication.apirest.DTO.LibroMapper;
 import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
 import com.autentication.apirest.services.IAuthorService;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/autores")
@@ -24,18 +29,21 @@ public class AuthorController {
     //El metodo retorna ResponseEntity porque nos da mayor control sobre los Status http que nos da el request
     //Sirve para hacer las pruebas en PostmMan
     @GetMapping
-    public ResponseEntity<Iterable<Author>> getAllAuthors() {
-        Iterable<Author> authors = authorService.listAuthores();
-        return new ResponseEntity<>(authors, HttpStatus.OK);
+    public ResponseEntity<List<AuthorDTO>> getAllAuthors() {
+        List<Author> authors = authorService.listAuthores();
+        List<AuthorDTO> authorDTOs = authors.stream()
+                .map(AuthorMapper::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(authorDTOs, HttpStatus.OK);
     }
 
     // GET /autores/{id}: Obtener detalles de un autor específico.
     @GetMapping("/{id}")
-    public ResponseEntity<Author> getAuthorById(@PathVariable Long id) {
+    public ResponseEntity<AuthorDTO> getAuthorById(@PathVariable Long id) {
         Optional<Author> author = this.authorService.searchAuthor(id);
 
         if (author.isPresent()){
-            return new ResponseEntity<>(author.get(), HttpStatus.OK);
+            return new ResponseEntity<>(AuthorMapper.toDTO(author.get()), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -44,21 +52,21 @@ public class AuthorController {
 
     // POST /autores: Crear un nuevo autor.
     @PostMapping
-    public ResponseEntity<Author> createAuthor(@RequestBody Author autor) {
+    public ResponseEntity<AuthorDTO> createAuthor(@RequestBody Author autor) {
         autor.setId(currentId);
         currentId++;
 
         Author newAuthor = this.authorService.createAuthor(autor);
 
         if (newAuthor != null){
-            return new ResponseEntity<>(newAuthor, HttpStatus.OK);
+            return new ResponseEntity<>(AuthorMapper.toDTO(newAuthor), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Author> updateAuthor(@PathVariable Long id, @RequestBody Author autor) {
+    public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable Long id, @RequestBody Author autor) {
         Author previous = authorService.searchAuthor(id).orElse(null);
 
         if (previous != null) {
@@ -66,7 +74,7 @@ public class AuthorController {
                 Author updatedAuthor = authorService.editAuthor(id, autor);
 
                 if (updatedAuthor != null){
-                    return new ResponseEntity<>(updatedAuthor, HttpStatus.OK);
+                    return new ResponseEntity<>(AuthorMapper.toDTO(updatedAuthor), HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
                 }
@@ -90,11 +98,13 @@ public class AuthorController {
 
     //GET /autores/{id}/libros: Listar los libros de un autor específico.
     @GetMapping("/{id}/libros")
-    public ResponseEntity<List<Libro>> getLibrosByAuthor(@PathVariable Long id) {
+    public ResponseEntity<List<LibroDTO>> getLibrosByAuthor(@PathVariable Long id) {
         List<Libro> libros = this.authorService.listLibrosFromAutor(id);
-
+        List<LibroDTO> libroDTOs = libros.stream()
+                .map(LibroMapper::toDTO)
+                .collect(Collectors.toList());
         if (libros != null){
-            return new ResponseEntity<>(libros, HttpStatus.OK);
+            return new ResponseEntity<>(libroDTOs, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
