@@ -48,7 +48,7 @@ function LibroPage() {
             axios.post(instance.getUri() + "/libros", {
                 'titulo': e.target.titulo.value,
                 'fechaPublicacion': e.target.fechaPublicacion.value,
-                'autorId': e.target.autorId.value
+                'autorNombre': e.target.autorNombre.value
             }).then(res => {
                 if (res.status === 200) {
                     queryLibros()
@@ -86,9 +86,9 @@ function LibroPage() {
         setModalEdit(false);
     }
 
-    const deleteLibro = (libro) => {
+    const deleteLibro = async (libro) => {
         let opt = window.confirm("¿Está seguro que desea eliminar el libro?")
-        getIdFromName(libro)
+        await getIdFromName(libro)
 
         if (opt) {
             try {
@@ -108,10 +108,10 @@ function LibroPage() {
         }
     }
 
-    const getIdFromName = (libro) => {
+    const getIdFromName = async (libro) => {
         try {
             console.log("a intentar obtener id del titulo")
-            axios.get(instance.getUri() + "/libros" + "/id/" + libro.titulo)
+            await axios.get(instance.getUri() + "/libros" + "/id/" + libro.titulo)
                 .then(res => {
                         if (res.status === 200) {
                             console.log("llego, lo seteo")
@@ -127,15 +127,15 @@ function LibroPage() {
         }
     }
 
-    const onEditSubmit = (e) => {
+    const onEditSubmit = async (e) => {
         e.preventDefault()
-        getIdFromName(previousLibro)
+        await getIdFromName(previousLibro)
 
         try {
             axios.put(instance.getUri() + "/libros" + "/" + id, {
                 'titulo': e.target.tituloEdit.value,
                 'fechaPublicacion': e.target.fechaPublicacionEdit.value,
-                'autorId': e.target.autorIdEdit.value
+                'autorNombre': e.target.autorNombreEdit.value
             })
                 .then(res => {
                     console.log(res.status)
@@ -167,7 +167,7 @@ function LibroPage() {
     }
 
     const handleAutorIdChange = (e) => {
-        setEditingLibro({...editingLibro, autorId: e.target.value})
+        setEditingLibro({...editingLibro, autorNombre: e.target.value})
     }
     const backgroundStyle = {
         backgroundImage: "url('b2.jpg')",
@@ -193,16 +193,16 @@ function LibroPage() {
                         <tr>
                             <th>Título</th>
                             <th>Fecha de Publicación</th>
-                            <th>Autor ID</th>
+                            <th>Nombre del Autor</th>
                             <th>Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
                         {libros.length > 0 ? libros.map((libro) => (
-                                <tr key={libro.autorId}>
+                                <tr key={libro.autorNombre}>
                                     <td>{libro.titulo}</td>
                                     <td>{libro.fechaPublicacion}</td>
-                                    <td>{libro.autorId}</td>
+                                    <td>{libro.autorNombre}</td>
                                     <td>
                                         <Button color="primary"
                                                 onClick={() => handleModalEditShow(libro)}>Editar</Button>{" "}
@@ -241,12 +241,12 @@ function LibroPage() {
                                     />
                                 </FormGroup>
                                 <FormGroup>
-                                    <label>ID del Autor:</label>
+                                    <label>Nombre del Autor:</label>
                                     <input
                                         style={{marginLeft: '10px'}}
                                         className={"input"}
-                                        type="number"
-                                        name="autorId"
+                                        type="text"
+                                        name="autorNombre"
                                     />
                                 </FormGroup>
                                 <button id={"createSubmitBtn"} type={"submit"} style={{display: 'none'}}>
@@ -292,12 +292,12 @@ function LibroPage() {
                                             />
                                         </FormGroup>
                                         <FormGroup>
-                                            <label>ID del Autor:</label>
+                                            <label>Nombre del Autor:</label>
                                             <input
                                                 className={"input"}
-                                                type="number"
-                                                name="autorIdEdit"
-                                                value={editingLibro.autorId}
+                                                type="text"
+                                                name="autorNombreEdit"
+                                                value={editingLibro.autorNombre}
                                                 onChange={handleAutorIdChange}
                                             />
                                         </FormGroup>

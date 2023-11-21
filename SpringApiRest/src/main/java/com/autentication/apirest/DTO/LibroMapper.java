@@ -16,7 +16,7 @@ public class LibroMapper {
         LibroDTO dto = new LibroDTO();
 
         // debemos hacer mapping de Autor a AutorDTO con el mapper de DTO
-        dto.setAutorId(libro.getAutor().getId());
+        dto.setAutorNombre(libro.getAutor().getNombre());
         dto.setTitulo(libro.getTitulo());
         dto.setFechaPublicacion(libro.getFechaPublicacion());
         return dto;

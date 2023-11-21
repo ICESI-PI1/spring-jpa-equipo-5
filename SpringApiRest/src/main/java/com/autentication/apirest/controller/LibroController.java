@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/libros")
 public class LibroController {
-    private Long currentId = 1L; // Comienza desde 1 y aumenta con cada creación
     private ILibroService libroService;
     private IAuthorService authorService;
     private LibroMapper libroMapper = new LibroMapper();
@@ -55,10 +54,10 @@ public class LibroController {
     // POST /libros
     @PostMapping
     public ResponseEntity<LibroDTO> createLibro(@RequestBody LibroDTO libro) {
-        Long authorId = libro.getAutorId();
+        String authorName = libro.getAutorNombre();
 
-        Author author = authorService.searchAuthor(authorId).orElse(null);
-        System.out.println("author id "+authorId);
+        Author author = getAutorByName(authorName);
+        System.out.println("author name "+authorName);
         List<Author> authors = authorService.listAuthores();
 
         for (int i = 0; i < authors.size(); i++) {
@@ -90,16 +89,28 @@ public class LibroController {
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
+    public Author getAutorByName(String name){
+        List<Author> authors = this.authorService.listAuthores();
+
+        for (int i = 0; i < authors.size(); i++) {
+            if (authors.get(i).getNombre().equals(name)){
+                return authors.get(i);
+            }
+        }
+
+        return null;
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<LibroDTO> updateLibro(@PathVariable Long id, @RequestBody LibroDTO libro) {
         Libro previous = libroService.searchLibro(id).orElse(null);
 
-        Optional<Author> author = authorService.searchAuthor(libro.getAutorId());
+        Author author = getAutorByName(libro.getAutorNombre());
 
-        if (author.isPresent()) {
+        if (author != null) {
             if (previous != null) {
                 Libro newLibro = libroMapper.toEntity(libro);
-                newLibro.setAutor(author.get());
+                newLibro.setAutor(author);
                 newLibro.setId(id);
 
                 Libro updateLibro = libroService.editLibro(id, newLibro);
