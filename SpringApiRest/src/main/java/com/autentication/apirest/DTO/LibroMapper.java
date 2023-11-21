@@ -8,6 +8,7 @@ import com.autentication.apirest.services.impl.AuthorServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class LibroMapper {
     private IAuthorService iAuthorService;
@@ -37,6 +38,10 @@ public class LibroMapper {
         //        return libro;
         //    }
         //}
+        if(dto.getAutorId() != null) {
+            Optional<Author> author = iAuthorService.searchAuthor(dto.getAutorId());
+            author.ifPresent(libro::setAutor);
+        }
         return libro;
 
         //return null;
