@@ -29,7 +29,6 @@ public class LibroServiceTest {
 
     @BeforeEach
     public void setup1() {
-        // Suponiendo que la relación con Author es necesaria
         Author author1 = new Author(1L, "Autor 1", "Nacionalidad 1");
         Author author2 = new Author(2L, "Autor 2", "Nacionalidad 2");
 
