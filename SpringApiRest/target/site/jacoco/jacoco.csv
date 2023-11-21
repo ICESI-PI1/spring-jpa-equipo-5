@@ -1,0 +1,21 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+spring-boot-jwt,com.autentication.apirest.DTO,LibroMapper,19,20,0,0,5,6,1,2,1,2
+spring-boot-jwt,com.autentication.apirest.DTO,AuthorDTO,98,26,22,0,0,5,15,6,4,6
+spring-boot-jwt,com.autentication.apirest.DTO,LibroDTO,146,21,30,0,2,4,23,4,8,4
+spring-boot-jwt,com.autentication.apirest.DTO,AuthorMapper,3,28,0,0,1,8,1,2,1,2
+spring-boot-jwt,com.autentication.apirest.config,JwtTokenUtil,92,3,4,0,14,1,10,1,8,1
+spring-boot-jwt,com.autentication.apirest.config,JwtRequestFilter,83,3,10,0,23,1,6,1,1,1
+spring-boot-jwt,com.autentication.apirest.config,WebSecurityConfig,0,70,0,0,0,15,0,5,0,5
+spring-boot-jwt,com.autentication.apirest.config,JwtAuthenticationEntryPoint,5,3,0,0,2,1,1,1,1,1
+spring-boot-jwt,com.autentication.apirest.model,Author,148,37,29,1,8,15,21,8,6,8
+spring-boot-jwt,com.autentication.apirest.model,JwtRequest,26,0,0,0,12,0,6,0,6,0
+spring-boot-jwt,com.autentication.apirest.model,Libro,191,42,38,0,10,18,26,9,7,9
+spring-boot-jwt,com.autentication.apirest.model,JwtResponse,9,0,0,0,4,0,2,0,2,0
+spring-boot-jwt,com.autentication.apirest.controller,JwtAuthenticationController,48,3,0,0,12,1,2,1,2,1
+spring-boot-jwt,com.autentication.apirest.controller,LibroController,213,118,17,3,43,24,15,4,6,3
+spring-boot-jwt,com.autentication.apirest.controller,AuthorController,155,85,13,1,31,22,13,3,6,3
+spring-boot-jwt,com.autentication.apirest.services.impl,AuthorServiceImpl,8,90,3,5,2,22,3,8,0,7
+spring-boot-jwt,com.autentication.apirest.services.impl,LibroServiceImpl,10,58,1,1,2,15,2,5,1,5
+spring-boot-jwt,com.autentication.apirest,SpringBootHelloWorldApplication.new WebMvcConfigurer() {...},0,32,0,0,0,4,0,2,0,2
+spring-boot-jwt,com.autentication.apirest,SpringBootHelloWorldApplication,5,13,0,0,2,3,1,2,1,2
+spring-boot-jwt,com.autentication.apirest.services,JwtUserDetailsService,19,3,2,0,3,1,2,1,1,1

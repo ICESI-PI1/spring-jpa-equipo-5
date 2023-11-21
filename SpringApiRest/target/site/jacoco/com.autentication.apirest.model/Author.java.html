@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Author.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spring-boot-jwt</a> &gt; <a href="index.source.html" class="el_package">com.autentication.apirest.model</a> &gt; <span class="el_source">Author.java</span></div><h1>Author.java</h1><pre class="source lang-java linenums">package com.autentication.apirest.model;
+
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import javax.persistence.*;
+
+import static javax.persistence.GenerationType.SEQUENCE;
+
+
+@Entity(name = &quot;Author&quot;)
+@Table(name = &quot;AUTORES&quot;)
+<span class="pc bpc" id="L15" title="29 of 30 branches missed.">@Data</span>
+public class Author {
+    @Id
+    @SequenceGenerator(
+            name=&quot;author_sequence&quot;,
+            sequenceName = &quot;author_sequence&quot;,
+            allocationSize = 1
+    )
+    @GeneratedValue(strategy = SEQUENCE, generator = &quot;author_sequence&quot;)
+    private Long id;
+    @Column
+    private String nombre;
+    @Column
+    private String nacionalidad;
+
+<span class="fc" id="L30">    public Author(Long id, String nombre, String nacionalidad) {</span>
+<span class="fc" id="L31">        this.id = id;</span>
+<span class="fc" id="L32">        this.nombre = nombre;</span>
+<span class="fc" id="L33">        this.nacionalidad = nacionalidad;</span>
+<span class="fc" id="L34">    }</span>
+    public Author(Author author){
+<span class="nc" id="L36">        this(author.getId(),author.getNombre(), author.getNacionalidad());</span>
+<span class="nc" id="L37">    }</span>
+<span class="fc" id="L38">    public Author(){</span>
+
+<span class="fc" id="L40">    }</span>
+
+
+
+<span class="nc" id="L44">    public Author(String nombre, String nacionalidad){</span>
+<span class="nc" id="L45">        this.nombre = nombre;</span>
+<span class="nc" id="L46">        this.nacionalidad = nacionalidad;</span>
+<span class="nc" id="L47">    }</span>
+
+    public Long getId() {
+<span class="fc" id="L50">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L54">        this.id = id;</span>
+<span class="nc" id="L55">    }</span>
+
+    public String getNombre() {
+<span class="fc" id="L58">        return nombre;</span>
+    }
+
+    public void setNombre(String nombre) {
+<span class="fc" id="L62">        this.nombre = nombre;</span>
+<span class="fc" id="L63">    }</span>
+
+    public String getNacionalidad() {
+<span class="fc" id="L66">        return nacionalidad;</span>
+    }
+
+    public void setNacionalidad(String nacionalidad) {
+<span class="fc" id="L70">        this.nacionalidad = nacionalidad;</span>
+<span class="fc" id="L71">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

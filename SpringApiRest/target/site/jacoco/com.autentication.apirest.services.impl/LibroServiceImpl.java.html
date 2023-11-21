@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LibroServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spring-boot-jwt</a> &gt; <a href="index.source.html" class="el_package">com.autentication.apirest.services.impl</a> &gt; <span class="el_source">LibroServiceImpl.java</span></div><h1>LibroServiceImpl.java</h1><pre class="source lang-java linenums">package com.autentication.apirest.services.impl;
+
+import com.autentication.apirest.DTO.LibroDTO;
+import com.autentication.apirest.controller.AuthorController;
+import com.autentication.apirest.model.Author;
+import com.autentication.apirest.model.Libro;
+import com.autentication.apirest.repository.IAuthorRepository;
+import com.autentication.apirest.repository.ILibroRepository;
+import com.autentication.apirest.services.IAuthorService;
+import com.autentication.apirest.services.ILibroService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.Optional;
+@Service
+public class LibroServiceImpl implements ILibroService {
+    private ILibroRepository iRepository;
+    private IAuthorService iAuthorService;
+
+    @Autowired
+<span class="fc" id="L24">    public LibroServiceImpl(ILibroRepository libroRepository) {</span>
+<span class="fc" id="L25">        this.iRepository = libroRepository;</span>
+<span class="fc" id="L26">    }</span>
+
+    @Override
+    public Libro createLibro(Libro libro) {
+<span class="fc" id="L30">        return iRepository.save(libro);</span>
+    }
+
+
+    public void deleteLibro(Long id) {
+<span class="fc" id="L35">         iRepository.deleteById(id);</span>
+<span class="fc" id="L36">    }</span>
+
+    @Override
+    public Optional&lt;Libro&gt; searchLibro(Long id) {
+<span class="fc" id="L40">        return iRepository.findById(id);</span>
+    }
+
+    @Override
+    public List&lt;Libro&gt; listLibros() {
+<span class="nc" id="L45">        return iRepository.findAll();</span>
+    }
+
+    @Override
+    public Libro editLibro(Long id, Libro libroUpdate) {
+<span class="fc" id="L50">        Optional&lt;Libro&gt; existingLibro = iRepository.findById(id);</span>
+
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if (existingLibro.isPresent()) {</span>
+<span class="fc" id="L53">            Libro libro = existingLibro.get();</span>
+<span class="fc" id="L54">            libro.setTitulo(libroUpdate.getTitulo());</span>
+<span class="fc" id="L55">            libro.setAutor(libroUpdate.getAutor());</span>
+<span class="fc" id="L56">            libro.setFechaPublicacion(libroUpdate.getFechaPublicacion());</span>
+<span class="fc" id="L57">            iRepository.delete(existingLibro.get());</span>
+<span class="fc" id="L58">            return iRepository.save(libro);</span>
+        } else {
+<span class="nc" id="L60">            throw new EntityNotFoundException(&quot;Libro con id &quot; + id + &quot; no existe&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

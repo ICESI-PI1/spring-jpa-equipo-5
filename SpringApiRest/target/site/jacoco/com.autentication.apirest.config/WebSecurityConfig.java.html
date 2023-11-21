@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WebSecurityConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spring-boot-jwt</a> &gt; <a href="index.source.html" class="el_package">com.autentication.apirest.config</a> &gt; <span class="el_source">WebSecurityConfig.java</span></div><h1>WebSecurityConfig.java</h1><pre class="source lang-java linenums">package com.autentication.apirest.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+<span class="fc" id="L28">public class WebSecurityConfig extends WebSecurityConfigurerAdapter {</span>
+
+    @Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Autowired
+    private UserDetailsService jwtUserDetailsService;
+
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        // configure AuthenticationManager so that it knows from where to load
+        // user for matching credentials
+        // Use BCryptPasswordEncoder
+<span class="fc" id="L44">        auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());</span>
+<span class="fc" id="L45">    }</span>
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+<span class="fc" id="L49">        return new BCryptPasswordEncoder();</span>
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+<span class="fc" id="L55">        return super.authenticationManagerBean();</span>
+    }
+
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        // solución CORS Policy (ocurría aunque ya teníamos configurado el CORS)
+<span class="fc" id="L61">        httpSecurity.csrf().disable();</span>
+<span class="fc" id="L62">        httpSecurity.cors().disable();</span>
+<span class="fc" id="L63">        httpSecurity.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll();</span>
+
+
+        // We don't need CSRF for this example
+<span class="fc" id="L67">        httpSecurity.csrf().disable()</span>
+                // .cors().configurationSource(corsConfigurationSource()).and()
+                // dont authenticate this particular request
+<span class="fc" id="L70">                .authorizeRequests().antMatchers(&quot;/authenticate&quot;).permitAll().</span>
+                // all other requests need to be authenticated
+<span class="fc" id="L72">                        anyRequest().authenticated().and().</span>
+                // make sure we use stateless session; session won't be used to
+                // store user's state.
+<span class="fc" id="L75">                        exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()</span>
+<span class="fc" id="L76">                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);</span>
+
+        // Add a filter to validate the tokens with every request
+<span class="fc" id="L79">        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);</span>
+<span class="fc" id="L80">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

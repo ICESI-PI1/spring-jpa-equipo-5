@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthorServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spring-boot-jwt</a> &gt; <a href="index.source.html" class="el_package">com.autentication.apirest.services.impl</a> &gt; <span class="el_source">AuthorServiceImpl.java</span></div><h1>AuthorServiceImpl.java</h1><pre class="source lang-java linenums">package com.autentication.apirest.services.impl;
+
+import com.autentication.apirest.DTO.AuthorDTO;
+import com.autentication.apirest.model.Author;
+import com.autentication.apirest.model.Libro;
+import com.autentication.apirest.repository.IAuthorRepository;
+import com.autentication.apirest.services.IAuthorService;
+import com.autentication.apirest.services.ILibroService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class AuthorServiceImpl implements IAuthorService {
+
+    IAuthorRepository authorRepository;
+    private ILibroService libroService;
+
+    @Autowired
+<span class="fc" id="L24">    public AuthorServiceImpl(IAuthorRepository authorRepository, ILibroService libroService) {</span>
+<span class="fc" id="L25">        this.authorRepository = authorRepository;</span>
+<span class="fc" id="L26">        this.libroService = libroService;</span>
+<span class="fc" id="L27">    }</span>
+
+    @Override
+    public Author createAuthor(Author Author) {
+<span class="fc" id="L31">        return authorRepository.save(Author);</span>
+    }
+
+    @Override
+    public void deleteAuthor(Long id) {
+<span class="fc" id="L36">        authorRepository.deleteById(id);</span>
+<span class="fc" id="L37">    }</span>
+
+    @Override
+    public Optional&lt;Author&gt; searchAuthor(Long id) {
+<span class="fc" id="L41">        return authorRepository.findById(id);</span>
+    }
+
+    @Override
+    public List&lt;Author&gt; listAuthores() {
+<span class="fc" id="L46">        return authorRepository.findAll();</span>
+    }
+
+    @Override
+    public Author editAuthor(Long id, AuthorDTO authorUpdate) {
+<span class="fc" id="L51">        Optional&lt;Author&gt; existingAuthor = authorRepository.findById(id);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if (existingAuthor.isPresent()) {</span>
+<span class="fc" id="L53">            Author author = existingAuthor.get();</span>
+<span class="fc" id="L54">            author.setNacionalidad(authorUpdate.getNacionalidad());</span>
+<span class="fc" id="L55">            author.setNombre(authorUpdate.getNombre());</span>
+<span class="fc" id="L56">            return authorRepository.save(author);</span>
+        } else {
+<span class="nc" id="L58">            throw new EntityNotFoundException(&quot;author con id &quot; + id + &quot; no existe&quot;);</span>
+        }
+    }
+
+    @Override
+    public List&lt;Libro&gt; listLibrosFromAutor(Long id) {
+<span class="fc" id="L64">        List&lt;Libro&gt; librosFromAutor = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (searchAuthor(id).isPresent()) {</span>
+            for (Libro l :
+<span class="fc bfc" id="L68" title="All 2 branches covered.">                    libroService.listLibros()) {</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">                if (l.getAutor().getId().equals(id)) {</span>
+<span class="fc" id="L70">                    librosFromAutor.add(l);</span>
+                }
+<span class="fc" id="L72">            }</span>
+        } else {
+<span class="nc" id="L74">            return null;</span>
+        }
+<span class="fc" id="L76">        return librosFromAutor;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
