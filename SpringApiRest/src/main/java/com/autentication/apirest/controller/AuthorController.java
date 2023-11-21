@@ -1,4 +1,5 @@
 package com.autentication.apirest.controller;
+
 import com.autentication.apirest.DTO.AuthorDTO;
 import com.autentication.apirest.DTO.AuthorMapper;
 import com.autentication.apirest.DTO.LibroDTO;
@@ -21,7 +22,7 @@ public class AuthorController {
     private Long currentId = 1L; // Comienza desde 1 y aumenta con cada creación
     private IAuthorService authorService;
 
-    public AuthorController(IAuthorService authorService, ILibroService libroService){
+    public AuthorController(IAuthorService authorService, ILibroService libroService) {
         this.authorService = authorService;
     }
 
@@ -42,45 +43,51 @@ public class AuthorController {
     public ResponseEntity<AuthorDTO> getAuthorById(@PathVariable Long id) {
         Optional<Author> author = this.authorService.searchAuthor(id);
 
-        if (author.isPresent()){
+        if (author.isPresent()) {
             return new ResponseEntity<>(AuthorMapper.toDTO(author.get()), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
-
     // POST /autores: Crear un nuevo autor.
     @PostMapping
     public ResponseEntity<AuthorDTO> createAuthor(@RequestBody Author autor) {
-        autor.setId(currentId);
-        currentId++;
-
+        System.out.println("entra a crear autor");
         Author newAuthor = this.authorService.createAuthor(autor);
 
-        if (newAuthor != null){
+        if (newAuthor != null) {
+            System.out.println(AuthorMapper.toDTO(newAuthor).getNacionalidad());
             return new ResponseEntity<>(AuthorMapper.toDTO(newAuthor), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
+    @GetMapping("/id/{name}")
+    public ResponseEntity<Long> getAuthorIdByName(@PathVariable String name) {
+        List<Author> authors = this.authorService.listAuthores();
+
+        for (int i = 0; i < authors.size(); i++) {
+            if (authors.get(i).getNombre().equals(name)){
+                return new ResponseEntity<>(authors.get(i).getId(), HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable Long id, @RequestBody Author autor) {
+    public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable Long id, @RequestBody AuthorDTO autor) {
         Author previous = authorService.searchAuthor(id).orElse(null);
 
         if (previous != null) {
-            if (previous.getId().equals(autor.getId())){
-                Author updatedAuthor = authorService.editAuthor(id, autor);
+            Author updatedAuthor = authorService.editAuthor(id, autor);
 
-                if (updatedAuthor != null){
-                    return new ResponseEntity<>(AuthorMapper.toDTO(updatedAuthor), HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-                }
-
+            if (updatedAuthor != null) {
+                return new ResponseEntity<>(AuthorMapper.toDTO(updatedAuthor), HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -90,9 +97,9 @@ public class AuthorController {
     // DELETE /autores/{id}: Eliminar un autor.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
-         authorService.deleteAuthor(id);
+        authorService.deleteAuthor(id);
 
-        return  (new ResponseEntity<>(HttpStatus.NO_CONTENT));
+        return (new ResponseEntity<>(HttpStatus.NO_CONTENT));
 
     }
 
@@ -103,7 +110,7 @@ public class AuthorController {
         List<LibroDTO> libroDTOs = libros.stream()
                 .map(LibroMapper::toDTO)
                 .collect(Collectors.toList());
-        if (libros != null){
+        if (libros != null) {
             return new ResponseEntity<>(libroDTOs, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

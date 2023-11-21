@@ -1,5 +1,6 @@
 package com.autentication.apirest.services.impl;
 
+import com.autentication.apirest.DTO.AuthorDTO;
 import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
 import com.autentication.apirest.repository.IAuthorRepository;
@@ -46,11 +47,10 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     @Override
-    public Author editAuthor(Long id, Author authorUpdate) {
+    public Author editAuthor(Long id, AuthorDTO authorUpdate) {
         Optional<Author> existingAuthor = authorRepository.findById(id);
         if (existingAuthor.isPresent()) {
             Author author = existingAuthor.get();
-            author.setId(authorUpdate.getId());
             author.setNacionalidad(authorUpdate.getNacionalidad());
             author.setNombre(authorUpdate.getNombre());
             return authorRepository.save(author);
@@ -66,7 +66,7 @@ public class AuthorServiceImpl implements IAuthorService {
         if (searchAuthor(id).isPresent()) {
             for (Libro l :
                     libroService.listLibros()) {
-                if (l.getAutorId().equals(id)) {
+                if (l.getAutor().getId().equals(id)) {
                     librosFromAutor.add(l);
                 }
             }

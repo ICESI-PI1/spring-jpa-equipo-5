@@ -21,6 +21,8 @@ function LibroPage() {
     const [modalInsertar, setModalInsertar] = useState(false);
     const [modalEdit, setModalEdit] = useState(false);
     const [editingLibro, setEditingLibro] = useState();
+    const [id, setId] = useState();
+    const [previousLibro, setPreviousLibro] = useState()
 
     useEffect(() => {
         queryLibros()
@@ -76,6 +78,7 @@ function LibroPage() {
 
     const handleModalEditShow = (libro) => {
         setEditingLibro(libro);
+        setPreviousLibro(libro)
         setModalEdit(true);
     }
 
@@ -83,8 +86,9 @@ function LibroPage() {
         setModalEdit(false);
     }
 
-    const deleteLibro = (id) => {
+    const deleteLibro = (libro) => {
         let opt = window.confirm("¿Está seguro que desea eliminar el libro?")
+        getIdFromName(libro)
 
         if (opt) {
             try {
@@ -104,12 +108,31 @@ function LibroPage() {
         }
     }
 
+    const getIdFromName = (libro) => {
+        try {
+            console.log("a intentar obtener id del titulo")
+            axios.get(instance.getUri() + "/libros" + "/id/" + libro.titulo)
+                .then(res => {
+                        if (res.status === 200) {
+                            console.log("llego, lo seteo")
+                            setId(res.data)
+                        } else {
+                            alert("'Libro' couldn't be edited")
+                        }
+                    }
+                )
+        } catch (e) {
+            alert("Can't connect with backend")
+            console.log(e)
+        }
+    }
+
     const onEditSubmit = (e) => {
         e.preventDefault()
+        getIdFromName(previousLibro)
 
         try {
-            axios.put(instance.getUri() + "/libros" + "/" + editingLibro.id, {
-                'id': editingLibro.id,
+            axios.put(instance.getUri() + "/libros" + "/" + id, {
                 'titulo': e.target.tituloEdit.value,
                 'fechaPublicacion': e.target.fechaPublicacionEdit.value,
                 'autorId': e.target.autorIdEdit.value
@@ -168,7 +191,6 @@ function LibroPage() {
                     <Table>
                         <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Título</th>
                             <th>Fecha de Publicación</th>
                             <th>Autor ID</th>
@@ -177,15 +199,14 @@ function LibroPage() {
                         </thead>
                         <tbody>
                         {libros.length > 0 ? libros.map((libro) => (
-                                <tr key={libro.id}>
-                                    <td>{libro.id}</td>
+                                <tr key={libro.autorId}>
                                     <td>{libro.titulo}</td>
                                     <td>{libro.fechaPublicacion}</td>
                                     <td>{libro.autorId}</td>
                                     <td>
                                         <Button color="primary"
                                                 onClick={() => handleModalEditShow(libro)}>Editar</Button>{" "}
-                                        <Button color="danger" onClick={() => deleteLibro(libro.id)}>Eliminar</Button>
+                                        <Button color="danger" onClick={() => deleteLibro(libro)}>Eliminar</Button>
                                     </td>
                                 </tr>
                             )) :

@@ -12,6 +12,7 @@ function LibrosFromAuthorPage() {
         try {
             axios.get(`/autores/${authorId}/libros`)
                 .then((res) => {
+                    console.log("le llegaron los libros")
                     setBooks(res.data);
                 });
         } catch (e) {
@@ -29,6 +30,10 @@ function LibrosFromAuthorPage() {
         color: 'white'
     };
 
+    const style_for_input = {
+        color: 'black',
+    };
+
     return (
         <NavBar>
             <Center style={backgroundStyle}>
@@ -39,6 +44,7 @@ function LibrosFromAuthorPage() {
                         className={"input"}
                         type="number"
                         value={authorId}
+                        style={style_for_input}
                         onChange={(e) => setAuthorId(e.target.value)}
                         placeholder="ID del autor"
                     />
@@ -50,15 +56,13 @@ function LibrosFromAuthorPage() {
                     <Table size="md">
                         <Thead>
                             <Tr>
-                                <Th>ID</Th>
                                 <Th>Título</Th>
                                 <Th>Fecha de Publicación</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
                             {books.map((book) => (
-                                <Tr key={book.id}>
-                                    <Td>{book.id}</Td>
+                                <Tr key={book.titulo}>
                                     <Td>{book.titulo}</Td>
                                     <Td>{book.fechaPublicacion}</Td>
                                 </Tr>

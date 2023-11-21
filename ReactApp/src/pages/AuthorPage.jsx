@@ -20,6 +20,8 @@ function AuthorPage() {
     const [modalEdit, setModalEdit] = useState(false);
     // Nuevo estado para el autor que se está editando
     const [editingAuthor, setEditingAuthor] = useState();
+    const [id, setId] = useState()
+    const [previousAuthor, setPreviousAuthor] = useState()
 
     useEffect(() => {
         queryAutores()
@@ -37,6 +39,7 @@ function AuthorPage() {
     const handleModalEditShow = (author) => {
         // Actualiza el estado del formulario
         setEditingAuthor(author);
+        setPreviousAuthor(author)
         setModalEdit(true);
     }
     const handleModalEditHide = () => {
@@ -44,12 +47,31 @@ function AuthorPage() {
         setModalEdit(false);
     }
 
+    const getIdFromName = (autor) => {
+        try {
+            axios.get(instance.getUri() + "/autores" + "/id/" + autor.nombre)
+                .then(res => {
+                        if (res.status === 200) {
+                            setId(res.data)
+                        } else {
+                            alert("'Autor' couldn't be edited")
+                        }
+                    }
+                )
+        } catch (e) {
+            alert("Can't connect with backend")
+            console.log(e)
+        }
+    }
+
     const onEditSubmit = (e) => {
         e.preventDefault()
+        getIdFromName(previousAuthor)
+        console.log(id)
 
         try {
-            axios.put(instance.getUri() + "/autores" + "/" + editingAuthor.id, {
-                'id': editingAuthor.id,
+            axios.put(instance.getUri() + "/autores" + "/" + id, {
+                'id': id,
                 'nombre': e.target.nombreEdit.value,
                 'nacionalidad': e.target.nacionalidadEdit.value
             })
@@ -72,10 +94,11 @@ function AuthorPage() {
         document.getElementById("editSubmitBtn").click()
     }
 
-    const deleteAuthor = (id) => {
+    const deleteAuthor = (author) => {
         let opt = window.confirm("¿Está seguro que desea eliminar el autor?")
 
-        console.log(id)
+        getIdFromName(author.nombre)
+
         if (opt) {
             try {
                 axios.delete(instance.getUri() + "/autores" + "/" + id)
@@ -154,7 +177,6 @@ function AuthorPage() {
                     <Table>
                         <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nombre</th>
                             <th>Nacionalidad</th>
                             <th>Acciones</th>
@@ -162,14 +184,13 @@ function AuthorPage() {
                         </thead>
                         <tbody>
                         {authors.length > 0 ? authors.map((author) => (
-                                <tr key={author.id}>
-                                    <td>{author.id}</td>
+                                <tr key={author.nombre}>
                                     <td>{author.nombre}</td>
                                     <td>{author.nacionalidad}</td>
                                     <td>
                                         <Button color="primary"
                                                 onClick={() => handleModalEditShow(author)}>Editar</Button>{" "}
-                                        <Button color="danger" onClick={() => deleteAuthor(author.id)}>Eliminar</Button>
+                                        <Button color="danger" onClick={() => deleteAuthor(author)}>Eliminar</Button>
                                     </td>
                                 </tr>
                             )) :

@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/libros")
@@ -22,12 +21,14 @@ public class LibroController {
     private Long currentId = 1L; // Comienza desde 1 y aumenta con cada creación
     private ILibroService libroService;
     private IAuthorService authorService;
-    public LibroController(ILibroService libroService, IAuthorService authorService){
+    private LibroMapper libroMapper = new LibroMapper();
+
+    public LibroController(ILibroService libroService, IAuthorService authorService) {
         this.libroService = libroService;
         this.authorService = authorService;
     }
 
-//    Devuelve todos los autores
+    //    Devuelve todos los autores
 //    El metodo retorna ResponseEntity porque nos da mayor control sobre los Status http que nos da el request
 //    Sirve para hacer las pruebas en PostmMan
     @GetMapping
@@ -39,72 +40,90 @@ public class LibroController {
         return new ResponseEntity<>(libroDTOs, HttpStatus.OK);
     }
 
-
     // GET /libros/id
     @GetMapping("/{id}")
     public ResponseEntity<LibroDTO> getLibroById(@PathVariable Long id) {
         Optional<Libro> libro = this.libroService.searchLibro(id);
 
-        if (libro.isPresent()){
+        if (libro.isPresent()) {
             return new ResponseEntity<>(LibroMapper.toDTO(libro.get()), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
-
     // POST /libros
     @PostMapping
-    public ResponseEntity<LibroDTO> createLibro(@RequestBody Libro libro) {
+    public ResponseEntity<LibroDTO> createLibro(@RequestBody LibroDTO libro) {
         Long authorId = libro.getAutorId();
 
         Author author = authorService.searchAuthor(authorId).orElse(null);
+        System.out.println("author id "+authorId);
+        List<Author> authors = authorService.listAuthores();
 
-        if (author != null){
-            libro.setId(currentId);
-            currentId++;
+        for (int i = 0; i < authors.size(); i++) {
+            System.out.println("authorsss id: " + authors.get(i));
+        }
 
-            Libro newLibro = this.libroService.createLibro(libro);
+        if (author != null) {
+            Libro newLibro = libroMapper.toEntity(libro);
+            newLibro.setAutor(author);
+            this.libroService.createLibro(newLibro);
 
-            if (newLibro != null){
-                return new ResponseEntity<>(LibroMapper.toDTO(newLibro), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
+            return new ResponseEntity<>(LibroMapper.toDTO(newLibro), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
+    @GetMapping("/id/{titulo}")
+    public ResponseEntity<Long> getLibroIdByName(@PathVariable String titulo) {
+        List<Libro> libros = this.libroService.listLibros();
+
+        for (int i = 0; i < libros.size(); i++) {
+            System.out.println(libros.get(i).getTitulo());
+            if (libros.get(i).getTitulo().equals(titulo)){
+                return new ResponseEntity<>(libros.get(i).getId(), HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<LibroDTO> updateLibro(@PathVariable Long id, @RequestBody Libro libro) {
+    public ResponseEntity<LibroDTO> updateLibro(@PathVariable Long id, @RequestBody LibroDTO libro) {
         Libro previous = libroService.searchLibro(id).orElse(null);
 
-        if (previous != null) {
-            if (previous.getId().equals(libro.getId()) &&
-                    previous.getAutorId().equals(libro.getAutorId())){
-                Libro updateLibro = libroService.editLibro(id, libro);
+        Optional<Author> author = authorService.searchAuthor(libro.getAutorId());
 
-                if (updateLibro != null){
+        if (author.isPresent()) {
+            if (previous != null) {
+                Libro newLibro = libroMapper.toEntity(libro);
+                newLibro.setAutor(author.get());
+                newLibro.setId(id);
+
+                Libro updateLibro = libroService.editLibro(id, newLibro);
+
+                if (updateLibro != null) {
                     return new ResponseEntity<>(LibroMapper.toDTO(updateLibro), HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
                 }
-
             } else {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+
     }
 
     // DELETE /autores/{id}: Eliminar un autor.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLibro(@PathVariable Long id) {
-         libroService.deleteLibro(id);
+        libroService.deleteLibro(id);
 
-        return  (new ResponseEntity<>(HttpStatus.NO_CONTENT));
+        return (new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
 }

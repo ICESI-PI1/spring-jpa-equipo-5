@@ -38,10 +38,12 @@ public class Author {
     public Author(){
 
     }
+
+
+
     public Author(String nombre, String nacionalidad){
         this.nombre = nombre;
         this.nacionalidad = nacionalidad;
-
     }
 
     public Long getId() {

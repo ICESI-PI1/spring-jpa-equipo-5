@@ -1,8 +1,12 @@
 package com.autentication.apirest.services.impl;
 
+import com.autentication.apirest.DTO.LibroDTO;
+import com.autentication.apirest.controller.AuthorController;
+import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
 import com.autentication.apirest.repository.IAuthorRepository;
 import com.autentication.apirest.repository.ILibroRepository;
+import com.autentication.apirest.services.IAuthorService;
 import com.autentication.apirest.services.ILibroService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import java.util.Optional;
 @Service
 public class LibroServiceImpl implements ILibroService {
     private ILibroRepository iRepository;
+    private IAuthorService iAuthorService;
 
     @Autowired
     public LibroServiceImpl(ILibroRepository libroRepository) {
@@ -43,10 +48,11 @@ public class LibroServiceImpl implements ILibroService {
     @Override
     public Libro editLibro(Long id, Libro libroUpdate) {
         Optional<Libro> existingLibro = iRepository.findById(id);
+
         if (existingLibro.isPresent()) {
             Libro libro = existingLibro.get();
             libro.setTitulo(libroUpdate.getTitulo());
-            libro.setAutorId(libroUpdate.getAutorId());
+            libro.setAutor(libroUpdate.getAutor());
             libro.setFechaPublicacion(libroUpdate.getFechaPublicacion());
             return iRepository.save(libro);
         } else {

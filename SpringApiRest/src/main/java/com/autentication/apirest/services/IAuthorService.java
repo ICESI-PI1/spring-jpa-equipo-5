@@ -1,6 +1,7 @@
 package com.autentication.apirest.services;
 
 
+import com.autentication.apirest.DTO.AuthorDTO;
 import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
 
@@ -13,6 +14,6 @@ public interface IAuthorService {
     public void deleteAuthor(Long id);
     public Optional<Author> searchAuthor(Long id);
     public List<Author> listAuthores();
-    public Author editAuthor(Long id, Author Author);
+    public Author editAuthor(Long id, AuthorDTO Author);
     public List<Libro> listLibrosFromAutor(Long id);
 }

@@ -7,7 +7,7 @@ public class AuthorMapper {
     public static AuthorDTO toDTO(Author author){
         AuthorDTO authorDTO = new AuthorDTO();
         authorDTO.setNombre(author.getNombre());
-        authorDTO.setNacionalidad(authorDTO.getNacionalidad());
+        authorDTO.setNacionalidad(author.getNacionalidad());
         return authorDTO;
     }
 
