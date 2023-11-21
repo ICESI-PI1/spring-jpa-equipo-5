@@ -6,6 +6,7 @@ import com.autentication.apirest.DTO.LibroDTO;
 import com.autentication.apirest.DTO.LibroMapper;
 import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
+import com.autentication.apirest.repository.IAuthorRepository;
 import com.autentication.apirest.services.IAuthorService;
 import com.autentication.apirest.services.ILibroService;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,23 @@ public class AuthorController {
 
     public AuthorController(IAuthorService authorService, ILibroService libroService) {
         this.authorService = authorService;
+
+        AuthorDTO authorDTO1 = new AuthorDTO("Autor 1", "Colombia");
+        AuthorDTO authorDTO2 = new AuthorDTO("Autor 2", "Argentina");
+        AuthorDTO authorDTO3 = new AuthorDTO("Autor 3", "España");
+        AuthorDTO authorDTO4 = new AuthorDTO("Autor 4", "Polonia");
+        AuthorDTO authorDTO5 = new AuthorDTO("Autor 5", "Chile");
+
+        saveAuthorInitial(authorDTO1);
+        saveAuthorInitial(authorDTO2);
+        saveAuthorInitial(authorDTO3);
+        saveAuthorInitial(authorDTO4);
+        saveAuthorInitial(authorDTO5);
+    }
+
+    public void saveAuthorInitial(AuthorDTO authorDTO){
+        Author author = AuthorMapper.toEntity(authorDTO);
+        createAuthor(author);
     }
 
     //Devuelve todos los autores

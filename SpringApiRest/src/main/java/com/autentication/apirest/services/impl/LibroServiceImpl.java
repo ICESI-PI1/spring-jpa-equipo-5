@@ -54,6 +54,7 @@ public class LibroServiceImpl implements ILibroService {
             libro.setTitulo(libroUpdate.getTitulo());
             libro.setAutor(libroUpdate.getAutor());
             libro.setFechaPublicacion(libroUpdate.getFechaPublicacion());
+            iRepository.delete(existingLibro.get());
             return iRepository.save(libro);
         } else {
             throw new EntityNotFoundException("Libro con id " + id + " no existe");

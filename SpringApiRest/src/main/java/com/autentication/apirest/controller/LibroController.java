@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,11 +26,31 @@ public class LibroController {
     public LibroController(ILibroService libroService, IAuthorService authorService) {
         this.libroService = libroService;
         this.authorService = authorService;
+
+        LibroDTO libroDTO1 = new LibroDTO("Libro 1", new Date(), "Autor 1");
+        LibroDTO libroDTO2 = new LibroDTO("Libro 2", new Date(), "Autor 2");
+        LibroDTO libroDTO3 = new LibroDTO("Libro 3", new Date(), "Autor 2");
+        LibroDTO libroDTO4 = new LibroDTO("Libro 4", new Date(), "Autor 5");
+        LibroDTO libroDTO5 = new LibroDTO("Libro 5", new Date(), "Autor 3");
+
+        saveLibroInitial(libroDTO1);
+        saveLibroInitial(libroDTO2);
+        saveLibroInitial(libroDTO3);
+        saveLibroInitial(libroDTO4);
+        saveLibroInitial(libroDTO5);
+    }
+
+    public void saveLibroInitial(LibroDTO libroDTO){
+        Libro newLibro = libroMapper.toEntity(libroDTO);
+        Author author = getAutorByName(libroDTO.getAutorNombre());
+        newLibro.setAutor(author);
+
+        libroService.createLibro(newLibro);
     }
 
     //    Devuelve todos los autores
-//    El metodo retorna ResponseEntity porque nos da mayor control sobre los Status http que nos da el request
-//    Sirve para hacer las pruebas en PostmMan
+    //    El metodo retorna ResponseEntity porque nos da mayor control sobre los Status http que nos da el request
+    //    Sirve para hacer las pruebas en PostmMan
     @GetMapping
     public ResponseEntity<List<LibroDTO>> getLibros() {
         List<Libro> libros = this.libroService.listLibros();
