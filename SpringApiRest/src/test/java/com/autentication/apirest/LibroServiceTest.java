@@ -1,82 +1,76 @@
-package com.autentication.apirest;
+package test;
 
-import com.autentication.apirest.DTO.LibroDTO;
-import com.autentication.apirest.controller.LibroController;
-import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
-import com.autentication.apirest.services.IAuthorService;
-import com.autentication.apirest.services.ILibroService;
+import com.autentication.apirest.model.Author;
+import com.autentication.apirest.repository.ILibroRepository;
+import com.autentication.apirest.services.impl.LibroServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class LibroServiceTest {
+@SpringBootTest
+public class LibroServiceTest {
 
     @Mock
-    private ILibroService libroService;
-
-    @Mock
-    private IAuthorService authorService;
+    private ILibroRepository libroRepository;
 
     @InjectMocks
-    private LibroController libroController;
+    private LibroServiceImpl libroService;
+
+    private Libro libro1, libro2;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
+    public void setup1() {
+        // Suponiendo que la relación con Author es necesaria
+        Author author1 = new Author(1L, "Autor 1", "Nacionalidad 1");
+        Author author2 = new Author(2L, "Autor 2", "Nacionalidad 2");
+
+        libro1 = new Libro(1L, "Libro 1", new Date(), author1);
+        libro2 = new Libro(2L, "Libro 2", new Date(), author2);
+
+        when(libroRepository.findById(1L)).thenReturn(Optional.of(libro1));
+        when(libroRepository.findById(2L)).thenReturn(Optional.of(libro2));
     }
 
     @Test
-    void getLibrosTest() {
-        List<Libro> libros = new ArrayList<>();
-        //libros.add()
-
-        when(libroService.listLibros()).thenReturn(libros);
-
-        ResponseEntity<List<LibroDTO>> response = libroController.getLibros();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(libros.size(), response.getBody().size());
+    public void createLibroTest() {
+        when(libroRepository.save(any(Libro.class))).thenReturn(libro1);
+        Libro created = libroService.createLibro(libro1);
+        assertNotNull(created);
+        assertEquals("Libro 1", created.getTitulo());
     }
 
     @Test
-    void createLibroTest() {
-        LibroDTO libroDTO = new LibroDTO();
-        // Configura los detalles del libroDTO
-
-        Libro libro = new Libro();
-        // Configura los detalles del libro
-
-        when(authorService.searchAuthor(anyLong())).thenReturn(Optional.of(new Author()));
-        when(libroService.createLibro(any(Libro.class))).thenReturn(libro);
-
-        ResponseEntity<LibroDTO> response = libroController.createLibro(libroDTO);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
+    public void searchLibroTest() {
+        Optional<Libro> found = libroService.searchLibro(1L);
+        assertTrue(found.isPresent());
+        assertEquals("Libro 1", found.get().getTitulo());
     }
 
     @Test
-    void deleteLibroTest() {
-        Long id = 1L;
+    public void editLibroTest() {
+        Libro updatedLibro = new Libro(1L, "Libro 1 Editado", new Date(), libro1.getAutor());
+        when(libroRepository.findById(1L)).thenReturn(Optional.of(libro1));
+        when(libroRepository.save(any(Libro.class))).thenReturn(updatedLibro);
 
-        doNothing().when(libroService).deleteLibro(anyLong());
+        Libro result = libroService.editLibro(1L, updatedLibro);
+        assertNotNull(result);
+        assertEquals("Libro 1 Editado", result.getTitulo());
+    }
 
-        ResponseEntity<Void> response = libroController.deleteLibro(id);
-
-        verify(libroService).deleteLibro(id);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    @Test
+    public void deleteLibroTest() {
+        doNothing().when(libroRepository).deleteById(1L);
+        libroService.deleteLibro(1L);
+        verify(libroRepository, times(1)).deleteById(1L);
     }
 
 

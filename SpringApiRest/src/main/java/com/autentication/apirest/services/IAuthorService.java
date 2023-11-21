@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface IAuthorService {
 
-    public Author createAuthor(Author Author);
+    public Author createAuthor(AuthorDTO Author);
     public void deleteAuthor(Long id);
     public Optional<Author> searchAuthor(Long id);
     public List<Author> listAuthores();

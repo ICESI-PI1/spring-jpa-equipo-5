@@ -1,87 +1,55 @@
 package com.autentication.apirest;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.autentication.apirest.DTO.AuthorDTO;
-import com.autentication.apirest.controller.AuthorController;
+import com.autentication.apirest.DTO.AuthorMapper;
 import com.autentication.apirest.model.Author;
-import com.autentication.apirest.services.IAuthorService;
+import com.autentication.apirest.repository.IAuthorRepository;
+import com.autentication.apirest.services.impl.AuthorServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-class AuthorServiceTest {
+@SpringBootTest
+public class AuthorServiceTest {
 
     @Mock
-    private IAuthorService authorService;
+    private IAuthorRepository authorRepository;
 
     @InjectMocks
-    private AuthorController authorController;
+    private AuthorServiceImpl authorService;
+
+    private Author author;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        author = new Author(1L, "Garcia", "Colombiano");
     }
 
-    @Test
-    void getAllAuthorsTest() {
-        List<Author> authors = new ArrayList<>();
-        // Agregar autores
-
-        when(authorService.listAuthores()).thenReturn(authors);
-
-        ResponseEntity<List<AuthorDTO>> response = authorController.getAllAuthors();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(authors.size(), response.getBody().size());
-    }
     @Test
     void createAuthorTest() {
-        AuthorDTO authorDTO = new AuthorDTO("Nombre", "Nacionalidad");
-        Author author = new Author(1L, "Nombre", "Nacionalidad");
-
-        when(authorService.createAuthor(any(Author.class))).thenReturn(author);
-
-        ResponseEntity<AuthorDTO> response = authorController.createAuthor(author);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(authorDTO.getNombre(), response.getBody().getNombre());
+        AuthorDTO authorDTO = AuthorMapper.toDTO(author);
+        when(authorRepository.save(any(Author.class))).thenReturn(author);
+        Author result = authorService.createAuthor(authorDTO);
+        assertNotNull(result);
+        assertEquals("Garcia", result.getNombre());
     }
+
+
+
     @Test
-    void deleteAuthorTest() {
-        Long id = 1L;
-
-        doNothing().when(authorService).deleteAuthor(anyLong());
-
-        ResponseEntity<Void> response = authorController.deleteAuthor(id);
-
-        verify(authorService).deleteAuthor(id);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    }
-    @Test
-    void updateAuthorTest() {
-        Long id = 1L;
-        AuthorDTO authorDTO = new AuthorDTO("Nombre Actualizado", "Nacionalidad");
-        Author updatedAuthor = new Author(id, "Nombre Actualizado", "Nacionalidad");
-
-        when(authorService.editAuthor(eq(id), any(AuthorDTO.class))).thenReturn(updatedAuthor);
-
-        ResponseEntity<AuthorDTO> response = authorController.updateAuthor(id, authorDTO);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(authorDTO.getNombre(), response.getBody().getNombre());
+    void searchAuthorTest() {
+        when(authorRepository.findById(1L)).thenReturn(Optional.of(author));
+        Optional<Author> found = authorService.searchAuthor(1L);
+        assertTrue(found.isPresent());
+        assertEquals("Garcia", found.get().getNombre());
     }
 
 
 }
-

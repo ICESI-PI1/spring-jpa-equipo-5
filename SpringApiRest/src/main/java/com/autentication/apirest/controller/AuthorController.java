@@ -52,7 +52,7 @@ public class AuthorController {
 
     // POST /autores: Crear un nuevo autor.
     @PostMapping
-    public ResponseEntity<AuthorDTO> createAuthor(@RequestBody Author autor) {
+    public ResponseEntity<AuthorDTO> createAuthor(@RequestBody AuthorDTO autor) {
         System.out.println("entra a crear autor");
         Author newAuthor = this.authorService.createAuthor(autor);
 
