@@ -12,6 +12,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity(name="Libro")
 @Table(name = "LIBROS")
+@Data
 public class Libro {
     @Id
     @SequenceGenerator(
@@ -26,53 +27,23 @@ public class Libro {
     private String titulo;
     @Column
     private Date fechaPublicacion;
-    @Column
-    private Long autorId;
 
-    public Libro(Long id, String titulo, Date fechaPublicacion, Long autorId) {
+    // many to one, necesitamos instancia de ese ONE
+    @ManyToOne
+    private Author autor;
+
+    public Libro(Long id, String titulo, Date fechaPublicacion, Author autor) {
         this.id = id;
         this.titulo = titulo;
         this.fechaPublicacion = fechaPublicacion;
-        this.autorId = autorId;
+        this.autor = autor;
     }
 
     public Libro(Libro libro) {
-        this(libro.getId(), libro.getTitulo(), libro.getFechaPublicacion(), libro.getAutorId());
+        this(libro.getId(), libro.getTitulo(), libro.getFechaPublicacion(), libro.getAutor());
     }
 
     public Libro() {
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public Date getFechaPublicacion() {
-        return fechaPublicacion;
-    }
-
-    public void setFechaPublicacion(Date fechaPublicacion) {
-        this.fechaPublicacion = fechaPublicacion;
-    }
-
-    public Long getAutorId() {
-        return autorId;
-    }
-
-    public void setAutorId(Long autorId) {
-        this.autorId = autorId;
     }
 }

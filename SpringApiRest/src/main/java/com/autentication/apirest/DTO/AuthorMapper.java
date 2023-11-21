@@ -6,16 +6,16 @@ public class AuthorMapper {
 
     public static AuthorDTO toDTO(Author author){
         AuthorDTO authorDTO = new AuthorDTO();
-        authorDTO.setId(author.getId());
         authorDTO.setNombre(author.getNombre());
         authorDTO.setNacionalidad(authorDTO.getNacionalidad());
         return authorDTO;
     }
 
     public static Author toEntity(AuthorDTO dto){
-        Author author = new Author();
+        // tratando de que Author tenga constructor donde ID sea automático, no pasado
+        // por parámetro
+        Author author = new Author(dto.getNombre(), dto.getNacionalidad());
         author.setNombre(dto.getNombre());
-        author.setId(dto.getId());
         author.setNacionalidad(dto.getNacionalidad());
         return author;
     }

@@ -12,6 +12,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity(name = "Author")
 @Table(name = "AUTORES")
+@Data
 public class Author {
     @Id
     @SequenceGenerator(
@@ -36,31 +37,6 @@ public class Author {
     }
     public Author(){
 
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getNacionalidad() {
-        return nacionalidad;
-    }
-
-    public void setNacionalidad(String nacionalidad) {
-        this.nacionalidad = nacionalidad;
     }
 }
 
