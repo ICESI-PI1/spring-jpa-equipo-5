@@ -1,4 +1,4 @@
-package test;
+package com.autentication.apirest;
 
 import com.autentication.apirest.model.Libro;
 import com.autentication.apirest.model.Author;
@@ -46,6 +46,7 @@ public class LibroServiceTest {
         Libro created = libroService.createLibro(libro1);
         assertNotNull(created);
         assertEquals("Libro 1", created.getTitulo());
+        System.out.println("createLibroTest - Libro creado: " + created.getTitulo());
     }
 
     @Test

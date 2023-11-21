@@ -39,6 +39,7 @@ public class AuthorServiceTest {
         Author result = authorService.createAuthor(authorDTO);
         assertNotNull(result);
         assertEquals("Garcia", result.getNombre());
+        System.out.println("createAuthorTest - Autor creado: " + result.getNombre());
     }
 
 
