@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/libros")
 public class LibroController {
+    private Long currentId = 1L; // Comienza desde 1 y aumenta con cada creación
     private ILibroService libroService;
     private IAuthorService authorService;
     private LibroMapper libroMapper = new LibroMapper();
@@ -26,31 +26,11 @@ public class LibroController {
     public LibroController(ILibroService libroService, IAuthorService authorService) {
         this.libroService = libroService;
         this.authorService = authorService;
-
-        LibroDTO libroDTO1 = new LibroDTO("Libro 1", new Date(), "Autor 1");
-        LibroDTO libroDTO2 = new LibroDTO("Libro 2", new Date(), "Autor 2");
-        LibroDTO libroDTO3 = new LibroDTO("Libro 3", new Date(), "Autor 2");
-        LibroDTO libroDTO4 = new LibroDTO("Libro 4", new Date(), "Autor 5");
-        LibroDTO libroDTO5 = new LibroDTO("Libro 5", new Date(), "Autor 3");
-
-        saveLibroInitial(libroDTO1);
-        saveLibroInitial(libroDTO2);
-        saveLibroInitial(libroDTO3);
-        saveLibroInitial(libroDTO4);
-        saveLibroInitial(libroDTO5);
-    }
-
-    public void saveLibroInitial(LibroDTO libroDTO){
-        Libro newLibro = libroMapper.toEntity(libroDTO);
-        Author author = getAutorByName(libroDTO.getAutorNombre());
-        newLibro.setAutor(author);
-
-        libroService.createLibro(newLibro);
     }
 
     //    Devuelve todos los autores
-    //    El metodo retorna ResponseEntity porque nos da mayor control sobre los Status http que nos da el request
-    //    Sirve para hacer las pruebas en PostmMan
+//    El metodo retorna ResponseEntity porque nos da mayor control sobre los Status http que nos da el request
+//    Sirve para hacer las pruebas en PostmMan
     @GetMapping
     public ResponseEntity<List<LibroDTO>> getLibros() {
         List<Libro> libros = this.libroService.listLibros();
@@ -75,10 +55,10 @@ public class LibroController {
     // POST /libros
     @PostMapping
     public ResponseEntity<LibroDTO> createLibro(@RequestBody LibroDTO libro) {
-        String authorName = libro.getAutorNombre();
+        Long authorId = libro.getAutorId();
 
-        Author author = getAutorByName(authorName);
-        System.out.println("author name "+authorName);
+        Author author = authorService.searchAuthor(authorId).orElse(null);
+        System.out.println("author id "+authorId);
         List<Author> authors = authorService.listAuthores();
 
         for (int i = 0; i < authors.size(); i++) {
@@ -110,28 +90,16 @@ public class LibroController {
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    public Author getAutorByName(String name){
-        List<Author> authors = this.authorService.listAuthores();
-
-        for (int i = 0; i < authors.size(); i++) {
-            if (authors.get(i).getNombre().equals(name)){
-                return authors.get(i);
-            }
-        }
-
-        return null;
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<LibroDTO> updateLibro(@PathVariable Long id, @RequestBody LibroDTO libro) {
         Libro previous = libroService.searchLibro(id).orElse(null);
 
-        Author author = getAutorByName(libro.getAutorNombre());
+        Optional<Author> author = authorService.searchAuthor(libro.getAutorId());
 
-        if (author != null) {
+        if (author.isPresent()) {
             if (previous != null) {
                 Libro newLibro = libroMapper.toEntity(libro);
-                newLibro.setAutor(author);
+                newLibro.setAutor(author.get());
                 newLibro.setId(id);
 
                 Libro updateLibro = libroService.editLibro(id, newLibro);

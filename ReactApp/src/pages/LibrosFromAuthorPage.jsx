@@ -3,36 +3,12 @@ import { Center, Table, Tbody, Td, Th, Thead, Tr, Text, VStack } from "@chakra-u
 import axios from "../axios.js";
 import NavBar from "../components/NavBar.jsx";
 import { Button } from "reactstrap";
-import instance from "../axios.js";
 
 function LibrosFromAuthorPage() {
-    const [authorName, setAuthorName] = useState("")
     const [authorId, setAuthorId] = useState("");
     const [books, setBooks] = useState([]);
 
-    const getIdFromName = async () => {
-        try {
-            console.log('buscando nombre: ' + authorName)
-            await axios.get(instance.getUri() + "/autores" + "/id/" + authorName)
-                .then(res => {
-                        if (res.status === 200) {
-                            console.log('seteando ID !!! lo encontroooo' + authorName)
-                            console.log('id seteado' + res.data)
-                            setAuthorId(res.data)
-                        } else {
-                            alert("'Autor' couldn't be edited")
-                        }
-                    }
-                )
-        } catch (e) {
-            alert("Can't connect with backend")
-            console.log(e)
-        }
-    }
-
-    const fetchBooksByAuthorId = async () => {
-        await getIdFromName(authorName)
-
+    const fetchBooksByAuthorId = () => {
         try {
             axios.get(`/autores/${authorId}/libros`)
                 .then((res) => {
@@ -66,10 +42,10 @@ function LibrosFromAuthorPage() {
                     <Text fontSize="lg">Ingrese el ID del autor para ver sus libros:</Text>
                     <input
                         className={"input"}
-                        type="text"
-                        value={authorName}
+                        type="number"
+                        value={authorId}
                         style={style_for_input}
-                        onChange={(e) => setAuthorName(e.target.value)}
+                        onChange={(e) => setAuthorId(e.target.value)}
                         placeholder="ID del autor"
                     />
                     <br></br>

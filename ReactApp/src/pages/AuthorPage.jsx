@@ -47,14 +47,11 @@ function AuthorPage() {
         setModalEdit(false);
     }
 
-    const getIdFromName = async (autor) => {
+    const getIdFromName = (autor) => {
         try {
-            console.log('buscando nombre: ' + autor.nombre)
-            await axios.get(instance.getUri() + "/autores" + "/id/" + autor.nombre)
+            axios.get(instance.getUri() + "/autores" + "/id/" + autor.nombre)
                 .then(res => {
                         if (res.status === 200) {
-                            console.log('seteando ID !!! lo encontroooo' + autor.nombre)
-                            console.log('id seteado' + res.data)
                             setId(res.data)
                         } else {
                             alert("'Autor' couldn't be edited")
@@ -67,9 +64,9 @@ function AuthorPage() {
         }
     }
 
-    const onEditSubmit = async (e) => {
+    const onEditSubmit = (e) => {
         e.preventDefault()
-        await getIdFromName(previousAuthor)
+        getIdFromName(previousAuthor)
         console.log(id)
 
         try {
@@ -97,11 +94,10 @@ function AuthorPage() {
         document.getElementById("editSubmitBtn").click()
     }
 
-    const deleteAuthor = async (author) => {
+    const deleteAuthor = (author) => {
         let opt = window.confirm("¿Está seguro que desea eliminar el autor?")
 
-        await getIdFromName(author)
-        console.log(id)
+        getIdFromName(author.nombre)
 
         if (opt) {
             try {
@@ -119,6 +115,7 @@ function AuthorPage() {
                 console.log(e)
             }
         }
+
     }
 
     // listo
@@ -170,12 +167,7 @@ function AuthorPage() {
 
     return (
         <NavBar>
-            <Center style={{
-                backgroundImage: `url(${'aldeantrad.png'}`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat'
-            }}>
+            <Center style={{ backgroundImage: `url(${'aldeantrad.png'}`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
                 <VStack width={"80%"} alignContent={"center"} alignItems="center">
                     <h1 style={{color: 'white'}}>Autores</h1>
                     <Button color="success" onClick={handleModalInsertShow} style={{alignSelf: "flex-end"}}>
@@ -265,7 +257,7 @@ function AuthorPage() {
                         </ModalHeader>
 
                         <ModalBody>
-                            {editingAuthor !== undefined ?
+                            { editingAuthor !== undefined ?
                                 <>
                                     <form onSubmit={onEditSubmit}>
                                         <FormGroup>

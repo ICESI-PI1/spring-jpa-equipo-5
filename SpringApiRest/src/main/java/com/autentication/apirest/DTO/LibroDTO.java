@@ -13,5 +13,5 @@ import java.util.Date;
 public class LibroDTO implements Serializable {
     private String titulo;
     private Date fechaPublicacion;
-    private String autorNombre;
+    private Long autorId;
 }

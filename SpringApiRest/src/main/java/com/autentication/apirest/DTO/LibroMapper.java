@@ -8,6 +8,7 @@ import com.autentication.apirest.services.impl.AuthorServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class LibroMapper {
     private IAuthorService iAuthorService;
@@ -16,7 +17,7 @@ public class LibroMapper {
         LibroDTO dto = new LibroDTO();
 
         // debemos hacer mapping de Autor a AutorDTO con el mapper de DTO
-        dto.setAutorNombre(libro.getAutor().getNombre());
+        dto.setAutorId(libro.getAutor().getId());
         dto.setTitulo(libro.getTitulo());
         dto.setFechaPublicacion(libro.getFechaPublicacion());
         return dto;
@@ -37,6 +38,10 @@ public class LibroMapper {
         //        return libro;
         //    }
         //}
+        if(dto.getAutorId() != null) {
+            Optional<Author> author = iAuthorService.searchAuthor(dto.getAutorId());
+            author.ifPresent(libro::setAutor);
+        }
         return libro;
 
         //return null;

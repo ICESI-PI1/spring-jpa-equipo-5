@@ -1,6 +1,7 @@
 package com.autentication.apirest.services.impl;
 
 import com.autentication.apirest.DTO.AuthorDTO;
+import com.autentication.apirest.DTO.AuthorMapper;
 import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
 import com.autentication.apirest.repository.IAuthorRepository;
@@ -27,8 +28,9 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     @Override
-    public Author createAuthor(Author Author) {
-        return authorRepository.save(Author);
+    public Author createAuthor(AuthorDTO authorDTO) {
+        Author author = AuthorMapper.toEntity(authorDTO);
+        return authorRepository.save(author);
     }
 
     @Override
