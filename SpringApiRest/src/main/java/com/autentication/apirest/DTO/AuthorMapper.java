@@ -14,7 +14,7 @@ public class AuthorMapper {
     public static Author toEntity(AuthorDTO dto){
         // tratando de que Author tenga constructor donde ID sea automático, no pasado
         // por parámetro
-        Author author = new Author(dto.getNombre(), dto.getNacionalidad());
+        Author author = new Author();
         author.setNombre(dto.getNombre());
         author.setNacionalidad(dto.getNacionalidad());
         return author;

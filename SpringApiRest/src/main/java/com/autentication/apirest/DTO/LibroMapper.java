@@ -10,7 +10,7 @@ public class LibroMapper {
         LibroDTO dto = new LibroDTO();
 
         // debemos hacer mapping de Autor a AutorDTO con el mapper de DTO
-        dto.setAutor(libro.getAutor());
+        dto.setAutor(AuthorMapper.toDTO(libro.getAutor()));
         dto.setTitulo(libro.getTitulo());
         dto.setFechaPublicacion(libro.getFechaPublicacion());
         return dto;
@@ -22,7 +22,7 @@ public class LibroMapper {
         libro.setFechaPublicacion(dto.getFechaPublicacion());
         libro.setTitulo(dto.getTitulo());
         // Debemos pasar de AutorDTO a Autor con el mapper, nuevamente
-        libro.setAutor(dto.getAutor());
+        libro.setAutor(AuthorMapper.toEntity(dto.getAutor()));
         return libro;
     }
 }

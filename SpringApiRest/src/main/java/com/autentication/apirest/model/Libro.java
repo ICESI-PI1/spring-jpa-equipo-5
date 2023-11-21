@@ -46,4 +46,41 @@ public class Libro {
     public Libro() {
 
     }
+    public Libro(String titulo, Date fecha, Author aut){
+        this.titulo = titulo;
+        fechaPublicacion=fecha;
+        autor=aut;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public Date getFechaPublicacion() {
+        return fechaPublicacion;
+    }
+
+    public void setFechaPublicacion(Date fechaPublicacion) {
+        this.fechaPublicacion = fechaPublicacion;
+    }
+
+    public Author getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Author autor) {
+        this.autor = autor;
+    }
 }
