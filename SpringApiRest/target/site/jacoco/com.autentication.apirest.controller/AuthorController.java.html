@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthorController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spring-boot-jwt</a> &gt; <a href="index.source.html" class="el_package">com.autentication.apirest.controller</a> &gt; <span class="el_source">AuthorController.java</span></div><h1>AuthorController.java</h1><pre class="source lang-java linenums">package com.autentication.apirest.controller;
+
+import com.autentication.apirest.DTO.AuthorDTO;
+import com.autentication.apirest.DTO.AuthorMapper;
+import com.autentication.apirest.DTO.LibroDTO;
+import com.autentication.apirest.DTO.LibroMapper;
+import com.autentication.apirest.model.Author;
+import com.autentication.apirest.model.Libro;
+import com.autentication.apirest.repository.IAuthorRepository;
+import com.autentication.apirest.services.IAuthorService;
+import com.autentication.apirest.services.ILibroService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(&quot;/autores&quot;)
+public class AuthorController {
+<span class="fc" id="L23">    private Long currentId = 1L; // Comienza desde 1 y aumenta con cada creación</span>
+    private IAuthorService authorService;
+
+<span class="fc" id="L26">    public AuthorController(IAuthorService authorService, ILibroService libroService) {</span>
+<span class="fc" id="L27">        this.authorService = authorService;</span>
+
+<span class="fc" id="L29">        AuthorDTO authorDTO1 = new AuthorDTO(&quot;Autor 1&quot;, &quot;Colombia&quot;);</span>
+<span class="fc" id="L30">        AuthorDTO authorDTO2 = new AuthorDTO(&quot;Autor 2&quot;, &quot;Argentina&quot;);</span>
+<span class="fc" id="L31">        AuthorDTO authorDTO3 = new AuthorDTO(&quot;Autor 3&quot;, &quot;España&quot;);</span>
+<span class="fc" id="L32">        AuthorDTO authorDTO4 = new AuthorDTO(&quot;Autor 4&quot;, &quot;Polonia&quot;);</span>
+<span class="fc" id="L33">        AuthorDTO authorDTO5 = new AuthorDTO(&quot;Autor 5&quot;, &quot;Chile&quot;);</span>
+
+<span class="fc" id="L35">        saveAuthorInitial(authorDTO1);</span>
+<span class="fc" id="L36">        saveAuthorInitial(authorDTO2);</span>
+<span class="fc" id="L37">        saveAuthorInitial(authorDTO3);</span>
+<span class="fc" id="L38">        saveAuthorInitial(authorDTO4);</span>
+<span class="fc" id="L39">        saveAuthorInitial(authorDTO5);</span>
+<span class="fc" id="L40">    }</span>
+
+    public void saveAuthorInitial(AuthorDTO authorDTO){
+<span class="fc" id="L43">        Author author = AuthorMapper.toEntity(authorDTO);</span>
+<span class="fc" id="L44">        createAuthor(author);</span>
+<span class="fc" id="L45">    }</span>
+
+    //Devuelve todos los autores
+    //El metodo retorna ResponseEntity porque nos da mayor control sobre los Status http que nos da el request
+    //Sirve para hacer las pruebas en PostmMan
+    @GetMapping
+    public ResponseEntity&lt;List&lt;AuthorDTO&gt;&gt; getAllAuthors() {
+<span class="nc" id="L52">        List&lt;Author&gt; authors = authorService.listAuthores();</span>
+<span class="nc" id="L53">        List&lt;AuthorDTO&gt; authorDTOs = authors.stream()</span>
+<span class="nc" id="L54">                .map(AuthorMapper::toDTO)</span>
+<span class="nc" id="L55">                .collect(Collectors.toList());</span>
+<span class="nc" id="L56">        return new ResponseEntity&lt;&gt;(authorDTOs, HttpStatus.OK);</span>
+    }
+
+    // GET /autores/{id}: Obtener detalles de un autor específico.
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;AuthorDTO&gt; getAuthorById(@PathVariable Long id) {
+<span class="nc" id="L62">        Optional&lt;Author&gt; author = this.authorService.searchAuthor(id);</span>
+
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (author.isPresent()) {</span>
+<span class="nc" id="L65">            return new ResponseEntity&lt;&gt;(AuthorMapper.toDTO(author.get()), HttpStatus.OK);</span>
+        } else {
+<span class="nc" id="L67">            return new ResponseEntity&lt;&gt;(null, HttpStatus.NOT_FOUND);</span>
+        }
+    }
+
+    // POST /autores: Crear un nuevo autor.
+    @PostMapping
+    public ResponseEntity&lt;AuthorDTO&gt; createAuthor(@RequestBody Author autor) {
+<span class="fc" id="L74">        System.out.println(&quot;entra a crear autor&quot;);</span>
+<span class="fc" id="L75">        Author newAuthor = this.authorService.createAuthor(autor);</span>
+
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (newAuthor != null) {</span>
+<span class="fc" id="L78">            System.out.println(AuthorMapper.toDTO(newAuthor).getNacionalidad());</span>
+<span class="fc" id="L79">            return new ResponseEntity&lt;&gt;(AuthorMapper.toDTO(newAuthor), HttpStatus.OK);</span>
+        } else {
+<span class="nc" id="L81">            return new ResponseEntity&lt;&gt;(null, HttpStatus.BAD_REQUEST);</span>
+        }
+    }
+
+    @GetMapping(&quot;/id/{name}&quot;)
+    public ResponseEntity&lt;Long&gt; getAuthorIdByName(@PathVariable String name) {
+<span class="nc" id="L87">        List&lt;Author&gt; authors = this.authorService.listAuthores();</span>
+
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        for (int i = 0; i &lt; authors.size(); i++) {</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            if (authors.get(i).getNombre().equals(name)){</span>
+<span class="nc" id="L91">                return new ResponseEntity&lt;&gt;(authors.get(i).getId(), HttpStatus.OK);</span>
+            }
+        }
+
+<span class="nc" id="L95">        return new ResponseEntity&lt;&gt;(null, HttpStatus.NOT_FOUND);</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;AuthorDTO&gt; updateAuthor(@PathVariable Long id, @RequestBody AuthorDTO autor) {
+<span class="nc" id="L100">        Author previous = authorService.searchAuthor(id).orElse(null);</span>
+
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (previous != null) {</span>
+<span class="nc" id="L103">            Author updatedAuthor = authorService.editAuthor(id, autor);</span>
+
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            if (updatedAuthor != null) {</span>
+<span class="nc" id="L106">                return new ResponseEntity&lt;&gt;(AuthorMapper.toDTO(updatedAuthor), HttpStatus.OK);</span>
+            } else {
+<span class="nc" id="L108">                return new ResponseEntity&lt;&gt;(null, HttpStatus.NOT_FOUND);</span>
+            }
+        } else {
+<span class="nc" id="L111">            return new ResponseEntity&lt;&gt;(null, HttpStatus.NOT_FOUND);</span>
+        }
+    }
+
+    // DELETE /autores/{id}: Eliminar un autor.
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteAuthor(@PathVariable Long id) {
+<span class="nc" id="L118">        authorService.deleteAuthor(id);</span>
+
+<span class="nc" id="L120">        return (new ResponseEntity&lt;&gt;(HttpStatus.NO_CONTENT));</span>
+
+    }
+
+    //GET /autores/{id}/libros: Listar los libros de un autor específico.
+    @GetMapping(&quot;/{id}/libros&quot;)
+    public ResponseEntity&lt;List&lt;LibroDTO&gt;&gt; getLibrosByAuthor(@PathVariable Long id) {
+<span class="nc" id="L127">        List&lt;Libro&gt; libros = this.authorService.listLibrosFromAutor(id);</span>
+<span class="nc" id="L128">        List&lt;LibroDTO&gt; libroDTOs = libros.stream()</span>
+<span class="nc" id="L129">                .map(LibroMapper::toDTO)</span>
+<span class="nc" id="L130">                .collect(Collectors.toList());</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (libros != null) {</span>
+<span class="nc" id="L132">            return new ResponseEntity&lt;&gt;(libroDTOs, HttpStatus.OK);</span>
+        } else {
+<span class="nc" id="L134">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
