@@ -138,7 +138,7 @@ function LibroPage() {
                 'autorId': e.target.autorIdEdit.value
             })
                 .then(res => {
-                    console.log(res.status)
+                        console.log(res.status)
                         if (res.status === 200) {
                             queryLibros()
                             handleModalEditHide()

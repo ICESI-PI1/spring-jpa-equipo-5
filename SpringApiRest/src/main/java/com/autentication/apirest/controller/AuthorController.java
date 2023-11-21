@@ -6,6 +6,7 @@ import com.autentication.apirest.DTO.LibroDTO;
 import com.autentication.apirest.DTO.LibroMapper;
 import com.autentication.apirest.model.Author;
 import com.autentication.apirest.model.Libro;
+import com.autentication.apirest.repository.IAuthorRepository;
 import com.autentication.apirest.services.IAuthorService;
 import com.autentication.apirest.services.ILibroService;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class AuthorController {
 
     public AuthorController(IAuthorService authorService, ILibroService libroService) {
         this.authorService = authorService;
+
     }
 
     //Devuelve todos los autores

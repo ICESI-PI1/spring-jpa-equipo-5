@@ -32,7 +32,7 @@ public class LibroServiceImpl implements ILibroService {
 
 
     public void deleteLibro(Long id) {
-         iRepository.deleteById(id);
+        iRepository.deleteById(id);
     }
 
     @Override
